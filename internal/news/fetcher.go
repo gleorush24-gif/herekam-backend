@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"os"
 	"time"
 
 	"herekam/internal/models"
@@ -120,6 +121,11 @@ func FetchArticles(topic string, apiKey string) ([]models.Article, error) {
 }
 
 func ScoreArticles(articles []models.Article) ([]models.Article, error) {
+	scorerURL := os.Getenv("PYTHON_SCORER_URL")
+	if scorerURL == "" {
+		scorerURL = "http://127.0.0.1:8001"
+	}
+
 	body, err := json.Marshal(map[string]interface{}{
 		"articles": articles,
 	})
@@ -128,7 +134,7 @@ func ScoreArticles(articles []models.Article) ([]models.Article, error) {
 	}
 
 	resp, err := httpClient.Post(
-		"http://127.0.0.1:8001/score",
+		scorerURL+"/score",
 		"application/json",
 		bytes.NewBuffer(body),
 	)
