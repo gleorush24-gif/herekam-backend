@@ -10,7 +10,7 @@ type Config struct {
 func Load() Config {
 	newsAPIKey := os.Getenv("NEWS_API_KEY")
 	if newsAPIKey == "" {
-		newsAPIKey: "ada9eb876f384277acf4445bfafc4c66"
+		newsAPIKey = "ada9eb876f384277acf4445bfafc4c66"
 	}
 	return Config{
 		NewsAPIKey: newsAPIKey,
