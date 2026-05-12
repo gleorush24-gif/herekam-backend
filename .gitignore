@@ -1,0 +1,13 @@
+# Go
+*.exe
+*.out
+vendor/
+
+# Python
+bias-service/venv/
+bias-service/__pycache__/
+bias-service/*.pyc
+
+# Environment
+.env
+*.env
