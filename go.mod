@@ -1,9 +1,9 @@
 module herekam
 
-go 1.23
+go 1.25.0
 
 require (
-	github.com/gin-contrib/cors v1.7.7
+	github.com/gin-contrib/cors v1.5.0
 	github.com/gin-gonic/gin v1.12.0
 )
 
