@@ -7,8 +7,6 @@ import (
 	"net/http"
 	"net/url"
 	"time"
-	"os"
-
 	"herekam/internal/models"
 )
 
