@@ -127,7 +127,7 @@ func ScoreArticles(articles []models.Article) ([]models.Article, error) {
 	}
 
 	resp, err := httpClient.Post(
-		"https://herekam-python.onrender.com",
+		"https://herekam-python.onrender.com/score",
 		"application/json",
 		bytes.NewBuffer(body),
 	)
