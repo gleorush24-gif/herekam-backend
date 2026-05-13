@@ -4,10 +4,10 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"herekam/internal/models"
 	"net/http"
 	"net/url"
 	"time"
-	"herekam/internal/models"
 )
 
 type NewsAPIResponse struct {
@@ -26,7 +26,7 @@ type GDELTResponse struct {
 }
 
 var httpClient = &http.Client{
-	Timeout: 15 * time.Second,
+	Timeout: 30 * time.Second,
 }
 
 func FetchFromNewsAPI(topic string, apiKey string) ([]models.Article, error) {
