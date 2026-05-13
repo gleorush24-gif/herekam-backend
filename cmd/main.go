@@ -3,46 +3,13 @@ package main
 import (
 	"fmt"
 	"net/http"
-	"os"
 
 	"herekam/config"
 	"herekam/internal/news"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	sendgrid "github.com/sendgrid/sendgrid-go"
-	"github.com/sendgrid/sendgrid-go/helpers/mail"
 )
-
-func sendVisitorEmail(topic string, ip string, userAgent string) {
-	from := mail.NewEmail("Herekam", "gleorush24@gmail.com")
-	to := mail.NewEmail("Gordon", "aebusulinagekalu@gmail.com")
-	subject := "🌏 New Herekam Search!"
-	body := fmt.Sprintf(`
-New search on Herekam!
-
-Topic searched: %s
-IP Address: %s
-Device/Browser: %s
-Time: now
-
-Harim nao! 🎙️
-	`, topic, ip, userAgent)
-
-	message := mail.NewSingleEmail(from, subject, to, body, "")
-	apiKey := os.Getenv("SENDGRID_API_KEY")
-	if apiKey == "" {
-    fmt.Println("Warning: SENDGRID_API_KEY not set")
-    return
-}
-	client := sendgrid.NewSendClient(apiKey)
-	_, err := client.Send(message)
-	if err != nil {
-		fmt.Println("Email error:", err)
-	} else {
-		fmt.Println("Email sent!")
-	}
-}
 
 func main() {
 	fmt.Println("Herekam is starting...")
@@ -66,7 +33,7 @@ func main() {
 	router.GET("/news", func(c *gin.Context) {
 		topic := c.Query("topic")
 		ip := c.ClientIP()
-		userAgent := c.Request.UserAgent()
+		fmt.Printf("Search: topic=%s ip=%s\n", topic, ip)
 
 		if topic == "" {
 			c.JSON(http.StatusBadRequest, gin.H{
@@ -74,9 +41,6 @@ func main() {
 			})
 			return
 		}
-
-		// Send email notification
-		go sendVisitorEmail(topic, ip, userAgent)
 
 		articles, err := news.FetchArticles(topic, cfg.NewsAPIKey)
 		if err != nil {
