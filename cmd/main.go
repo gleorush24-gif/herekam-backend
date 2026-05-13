@@ -32,8 +32,9 @@ Harim nao! 🎙️
 	message := mail.NewSingleEmail(from, subject, to, body, "")
 	apiKey := os.Getenv("SENDGRID_API_KEY")
 	if apiKey == "" {
-		apiKey = "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"
-	}
+    fmt.Println("Warning: SENDGRID_API_KEY not set")
+    return
+}
 	client := sendgrid.NewSendClient(apiKey)
 	_, err := client.Send(message)
 	if err != nil {
