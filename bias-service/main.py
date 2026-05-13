@@ -1,8 +1,19 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 from typing import List, Optional
+from transformers import pipeline
+import torch
 
 app = FastAPI()
+
+# Load AI bias model
+print("Loading AI bias model...")
+bias_classifier = pipeline(
+    "text-classification",
+    model="valurank/distilroberta-base-political-bias",
+    device=0 if torch.cuda.is_available() else -1
+)
+print("AI bias model loaded!")
 
 # == SOURCE BIAS SCORES ==
 
@@ -20,6 +31,8 @@ US_SOURCE_BIAS = {
     "usa-today": -0.1,
     "the-verge": -0.2,
     "slate-magazine": -0.4,
+    "foxnews.com": 0.7,
+    "npr.org": -0.3,
 }
 
 APAC_SOURCE_BIAS = {
@@ -114,6 +127,23 @@ class ScoreRequest(BaseModel):
 
 # == SCORING FUNCTIONS ==
 
+def get_ai_score(title: str, description: str) -> float:
+    try:
+        text = f"{title}. {description}"[:512]
+        result = bias_classifier(text)[0]
+        label = result['label'].upper()
+        confidence = result['score']
+
+        if label == 'LEFT':
+            return -confidence
+        elif label == 'RIGHT':
+            return confidence
+        else:
+            return 0.0
+    except Exception as e:
+        print(f"AI scoring error: {e}")
+        return 0.0
+
 def scan_words(text: str, word_list: list, direction: float) -> float:
     score = 0.0
     for word in word_list:
@@ -125,13 +155,21 @@ def get_regional_scores(source_id: str, title: str, description: str) -> BiasSco
     text = f"{title} {description}".lower()
     source = source_id.lower()
 
-    us_source = US_SOURCE_BIAS.get(source, 0.0)
-    us_content = scan_words(text, US_LEFT_WORDS, -1) + scan_words(text, US_RIGHT_WORDS, 1)
-    us_final = (us_source * 0.6) + (us_content * 0.4)
+    # AI score (most accurate)
+    ai_score = get_ai_score(title, description or "")
 
-    aus_source = APAC_SOURCE_BIAS.get(source, 0.0)
+    # Source score
+    source_score = ALL_SOURCES.get(source, 0.0)
+
+    # Content keyword score
+    us_content = scan_words(text, US_LEFT_WORDS, -1) + scan_words(text, US_RIGHT_WORDS, 1)
+
+    # Combine: AI 50%, Source 30%, Keywords 20%
+    us_final = (ai_score * 0.5) + (source_score * 0.3) + (us_content * 0.2)
+
     aus_content = scan_words(text, AUS_LEFT_WORDS, -1) + scan_words(text, AUS_RIGHT_WORDS, 1)
-    aus_final = (aus_source * 0.6) + (aus_content * 0.4)
+    aus_source = APAC_SOURCE_BIAS.get(source, 0.0)
+    aus_final = (ai_score * 0.5) + (aus_source * 0.3) + (aus_content * 0.2)
 
     china_content = scan_words(text, CRITICAL_CCP_WORDS, -1) + scan_words(text, PRO_CCP_WORDS, 1)
     china_final = china_content
@@ -160,6 +198,10 @@ def score_articles(request: ScoreRequest):
     scored = []
     for article in request.articles:
         source_id = article.source.get("id", "")
+        source_name = article.source.get("name", "")
+        if not source_id:
+            source_id = source_name.lower().replace(" ", "-")
+
         scores = get_regional_scores(
             source_id,
             article.title,
@@ -168,4 +210,5 @@ def score_articles(request: ScoreRequest):
         article.regional_scores = scores
         article.bias_score = scores.us_bias
         scored.append(article)
+
     return {"articles": scored}
