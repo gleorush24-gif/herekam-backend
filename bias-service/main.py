@@ -10,8 +10,8 @@ app = FastAPI()
 print("Loading AI bias model...")
 bias_classifier = pipeline(
     "text-classification",
-    model="valurank/distilroberta-base-political-bias",
-    device=0 if torch.cuda.is_available() else -1
+    model="cardiffnlp/twitter-roberta-base-sentiment-latest",
+    device=-1
 )
 print("AI bias model loaded!")
 
