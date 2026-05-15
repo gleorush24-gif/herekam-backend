@@ -6,70 +6,191 @@ app = FastAPI()
 
 # == SOURCE BIAS SCORES ==
 
+# == SOURCE BIAS SCORES ==
+
 US_SOURCE_BIAS = {
-    "fox-news": 0.7,
-    "breitbart": 0.9,
-    "cnn": -0.4,
-    "npr": -0.3,
-    "bbc-news": -0.1,
-    "reuters": 0.0,
-    "associated-press": 0.0,
-    "msnbc": -0.7,
-    "the-guardian": -0.5,
-    "gizmodo.com": -0.3,
-    "usa-today": -0.1,
-    "the-verge": -0.2,
-    "slate-magazine": -0.4,
-    "foxnews.com": 0.7,
-    "npr.org": -0.3,
-    "bbc.co.uk": -0.1,
-    "theguardian.com": -0.5,
-    "breitbart.com": 0.9,
-    "msnbc.com": -0.7,
-    "cnn.com": -0.4,
-    "nytimes.com": -0.3,
-    "washingtonpost.com": -0.3,
-    "wsj.com": 0.3,
-    "thehill.com": 0.1,
-    "politico.com": -0.1,
-    "axios.com": 0.0,
-    "reuters.com": 0.0,
-    "apnews.com": 0.0,
-    "wired.com": -0.2,
-    "theatlantic.com": -0.3,
+    # Far Right
+    "breitbart": 0.95,
+    "breitbart.com": 0.95,
+    "thedailywire.com": 0.85,
+    "dailywire.com": 0.85,
+    "thedailywire": 0.85,
+    "oann.com": 0.9,
+    "newsmax.com": 0.8,
+    "newsmax": 0.8,
+    "thegatewaypundit.com": 0.95,
+    "westernjournal.com": 0.8,
+    "thefederalist.com": 0.75,
+    "washingtonexaminer.com": 0.6,
+    "washingtonexaminer": 0.6,
+    "nypost.com": 0.6,
+    "nypost": 0.6,
     "nationalreview.com": 0.6,
-    "thedailywire.com": 0.8,
+    "nationalreview": 0.6,
+    "reason.com": 0.4,
+
+    # Right / Center Right
+    "fox-news": 0.7,
+    "foxnews.com": 0.7,
+    "fox-news.com": 0.7,
+    "wsj.com": 0.3,
+    "wall-street-journal": 0.3,
+    "thehill.com": 0.1,
+    "the-hill": 0.1,
+    "realclearpolitics.com": 0.3,
+    "forbes.com": 0.2,
+    "economistcom": 0.1,
+    "spectator.co.uk": 0.5,
+    "telegraph.co.uk": 0.5,
+    "thetimes.co.uk": 0.3,
+
+    # Center
+    "reuters": 0.0,
+    "reuters.com": 0.0,
+    "associated-press": 0.0,
+    "apnews.com": 0.0,
+    "axios.com": 0.0,
+    "axios": 0.0,
+    "politico.com": -0.1,
+    "politico": -0.1,
+    "bbc-news": -0.1,
+    "bbc.co.uk": -0.1,
+    "bbc.com": -0.1,
+    "npr": -0.3,
+    "npr.org": -0.3,
+    "pbs.org": -0.2,
+    "csmonitor.com": 0.0,
+    "usatoday.com": -0.1,
+    "usa-today": -0.1,
+
+    # Center Left
+    "nytimes.com": -0.3,
+    "new-york-times": -0.3,
+    "washingtonpost.com": -0.3,
+    "washington-post": -0.3,
+    "theatlantic.com": -0.3,
+    "the-atlantic": -0.3,
+    "time.com": -0.2,
+    "nbcnews.com": -0.3,
+    "nbcnews": -0.3,
+    "abcnews.go.com": -0.3,
+    "abc-news": -0.3,
+    "cbsnews.com": -0.3,
+    "cbsnews": -0.3,
+    "msnbc.com": -0.7,
+    "msnbc": -0.7,
+    "cnn.com": -0.4,
+    "cnn": -0.4,
+    "wired.com": -0.2,
+    "wired": -0.2,
+    "theverge.com": -0.2,
+    "the-verge": -0.2,
+    "gizmodo.com": -0.3,
+    "buzzfeednews.com": -0.4,
+    "huffpost.com": -0.5,
+    "huffingtonpost.com": -0.5,
     "thedailybeast.com": -0.4,
+    "salon.com": -0.5,
+    "rawstory.com": -0.6,
+
+    # Far Left
     "slate.com": -0.4,
+    "slate-magazine": -0.4,
     "vox.com": -0.5,
     "motherjones.com": -0.7,
-    "reason.com": 0.4,
-    "nypost.com": 0.6,
+    "thenation.com": -0.7,
+    "jacobin.com": -0.9,
+    "theguardian.com": -0.5,
+    "the-guardian": -0.5,
+    "guardian.com": -0.5,
+    "democracynow.org": -0.8,
+    "commondreams.org": -0.8,
+    "alternet.org": -0.7,
+    "truthout.org": -0.7,
+
+    # Business/Finance
+    "bloomberg.com": 0.1,
+    "bloomberg": 0.1,
+    "ft.com": 0.2,
+    "financial-times": 0.2,
+    "marketwatch.com": 0.1,
+    "cnbc.com": 0.1,
+    "cnbc": 0.1,
+    "businessinsider.com": -0.1,
+
+    # Tech
+    "techcrunch.com": -0.2,
+    "arstechnica.com": -0.2,
+    "engadget.com": -0.2,
+    "cnet.com": -0.1,
 }
 
 APAC_SOURCE_BIAS = {
-    "abc-news-au": -0.2,
+    # Australia Right
     "the-australian": 0.6,
-    "sydney-morning-herald": -0.3,
+    "theaustralian.com.au": 0.6,
     "sky-news-australia": 0.7,
-    "xinhua": 1.0,
-    "china-daily": 0.9,
-    "global-times": 0.95,
-    "scmp": 0.2,
+    "skynews.com.au": 0.7,
+    "news.com.au": 0.2,
+    "heraldsun.com.au": 0.5,
+    "couriermail.com.au": 0.5,
+    "dailytelegraph.com.au": 0.5,
+    "adelaidenow.com.au": 0.3,
+    "perthnow.com.au": 0.3,
+    "spectator.com.au": 0.6,
+
+    # Australia Center/Left
+    "abc-news-au": -0.2,
+    "abc.net.au": -0.2,
+    "sydney-morning-herald": -0.3,
+    "smh.com.au": -0.3,
+    "theage.com.au": -0.3,
+    "theguardian.com/au": -0.5,
+    "crikey.com.au": -0.4,
+    "9news.com.au": 0.0,
+    "7news.com.au": 0.0,
+    "sbs.com.au": -0.2,
+    "michaelwest.com.au": -0.5,
+
+    # New Zealand
+    "rnz.co.nz": -0.1,
     "rnz": -0.1,
+    "rnz-pacific": -0.1,
+    "stuff.co.nz": -0.1,
+    "nzherald.co.nz": 0.1,
+    "newshub.co.nz": -0.1,
+
+    # Pacific
     "abc-pacific": -0.1,
     "islands-business": 0.0,
-    "rnz-pacific": -0.1,
-    "smh.com.au": -0.3,
-    "theaustralian.com.au": 0.6,
-    "abc.net.au": -0.2,
-    "skynews.com.au": 0.7,
-    "9news.com.au": 0.0,
-    "news.com.au": 0.2,
-    "globaltimes.cn": 0.95,
+    "islandsbusiness.com": 0.0,
+    "rnzpacific.co.nz": -0.1,
+    "pina.com.fj": 0.0,
+    "solomonstarnews.com": 0.0,
+    "islandsun.com.sb": 0.0,
+
+    # China State Media (Pro CCP)
+    "xinhua": 1.0,
     "xinhuanet.com": 1.0,
+    "china-daily": 0.9,
+    "chinadaily.com.cn": 0.9,
+    "global-times": 0.95,
+    "globaltimes.cn": 0.95,
+    "cgtn.com": 0.9,
+    "people.com.cn": 0.95,
+
+    # Asia
+    "scmp": 0.2,
     "scmp.com": 0.2,
-    "rnz.co.nz": -0.1,
+    "straitstimes.com": 0.1,
+    "channelnewsasia.com": 0.0,
+    "japantimes.co.jp": 0.0,
+    "koreaherald.com": 0.0,
+    "hindustantimes.com": 0.1,
+    "timesofindia.com": 0.1,
+    "aljazeera.com": -0.2,
+    "aljazeera": -0.2,
+    "middleeasteye.net": -0.3,
 }
 
 ALL_SOURCES = {**US_SOURCE_BIAS, **APAC_SOURCE_BIAS}
@@ -77,49 +198,91 @@ ALL_SOURCES = {**US_SOURCE_BIAS, **APAC_SOURCE_BIAS}
 # == POLITICAL WORD LISTS ==
 
 US_LEFT_WORDS = [
+    # Social Justice
     "climate justice", "systemic racism", "gun control",
     "reproductive rights", "wealth inequality", "social justice",
     "universal healthcare", "defund", "marginalized",
     "white privilege", "intersectionality", "equity",
     "pro-choice", "transgender rights", "living wage",
-    "medicare for all", "green new deal", "police reform"
+    "medicare for all", "green new deal", "police reform",
+    "abolish ice", "reparations", "affirmative action",
+    "income inequality", "gender pay gap", "racial equity",
+    "lgbtq rights", "hate crime", "voter suppression",
+    "dark money", "corporate greed", "tax the rich",
+    "billionaire", "student debt", "workers rights",
+    "unions", "collective bargaining", "minimum wage",
+    "housing justice", "food insecurity", "mass incarceration",
+    "criminal justice reform", "implicit bias", "microaggression",
+    "safe space", "trigger warning", "cultural appropriation",
 ]
 
 US_RIGHT_WORDS = [
+    # Conservative Values
     "border security", "free market", "election integrity",
     "mainstream media", "deep state", "second amendment",
     "traditional values", "big government", "socialism",
     "pro-life", "illegal alien", "radical left",
     "cancel culture", "woke", "patriot",
-    "law and order", "make america great", "america first"
+    "law and order", "make america great", "america first",
+    "fake news", "witch hunt", "hoax",
+    "antifa", "far left", "marxist",
+    "open borders", "illegal immigration", "sanctuary city",
+    "religious liberty", "gun rights", "constitutional",
+    "lower taxes", "deregulation", "small government",
+    "strong military", "america first", "energy independence",
+    "voter id", "election fraud", "stolen election",
+    "critical race theory", "indoctrination", "parental rights",
+    "biological sex", "boys in girls sports", "groomers",
+    "big tech censorship", "shadow ban", "free speech",
 ]
 
 AUS_LEFT_WORDS = [
     "labor party", "union rights", "medicare",
     "indigenous rights", "renewable energy",
     "affordable housing", "welfare", "albo",
-    "albanese", "greens policy", "teal independent"
+    "albanese", "greens policy", "teal independent",
+    "aboriginal", "first nations", "treaty",
+    "climate action", "carbon tax", "emissions target",
+    "universal basic income", "housing crisis",
+    "wage theft", "penalty rates", "casual workers",
+    "refugees", "asylum seekers", "offshore detention",
+    "AUKUS criticism", "republic", "reconciliation",
 ]
 
 AUS_RIGHT_WORDS = [
     "liberal party", "coalition", "lower taxes",
     "border protection", "stop the boats",
     "small government", "religious freedom",
-    "dutton", "morrison", "national party"
+    "dutton", "morrison", "national party",
+    "economic management", "budget surplus",
+    "deregulation", "mining industry", "coal jobs",
+    "anti-woke", "free speech", "family values",
+    "national security", "defense spending",
+    "AUKUS support", "china threat", "sovereignty",
+    "illegal boat arrivals", "immigration control",
 ]
 
 PRO_CCP_WORDS = [
     "common prosperity", "core socialist values",
     "national rejuvenation", "reunification",
     "one china", "century of humiliation",
-    "wolf warrior", "chinese dream", "xi jinping thought"
+    "wolf warrior", "chinese dream", "xi jinping thought",
+    "chinese sovereignty", "non-interference",
+    "win-win cooperation", "peaceful development",
+    "chinese model", "socialism with chinese characteristics",
+    "harmonious society", "stable development",
 ]
 
 CRITICAL_CCP_WORDS = [
     "human rights", "uyghur", "taiwan independence",
     "tiananmen", "hong kong democracy",
     "xinjiang", "surveillance state",
-    "authoritarianism", "crackdown", "oppression"
+    "authoritarianism", "crackdown", "oppression",
+    "forced labor", "concentration camp", "genocide",
+    "censorship", "great firewall", "dissidents",
+    "tibet", "dalai lama", "falun gong",
+    "social credit", "mass surveillance", "zero covid",
+    "li keqiang", "peng shuai", "ai weiwei",
 ]
 
 PRO_PACIFIC_WORDS = [
@@ -127,29 +290,43 @@ PRO_PACIFIC_WORDS = [
     "climate vulnerability", "rising sea levels",
     "indigenous sovereignty", "decolonization",
     "pacific regionalism", "pacific islands forum",
-    "solomon islands", "fiji", "vanuatu", "samoa"
+    "solomon islands", "fiji", "vanuatu", "samoa",
+    "tuvalu", "kiribati", "marshall islands",
+    "blue pacific", "oceania", "melanesia",
+    "polynesia", "micronesia", "pacific culture",
+    "traditional fishing", "exclusive economic zone",
+    "small island developing states", "loss and damage",
+    "climate refugees", "pacific voices",
 ]
 
 PRO_DEVELOPMENT_WORDS = [
     "belt and road", "infrastructure investment",
     "economic development", "fishing rights",
     "security agreement", "china pacific",
-    "chinese investment", "port development"
+    "chinese investment", "port development",
+    "debt trap", "development aid", "trade agreement",
+    "bri", "silk road", "chinese loans",
+    "wharf development", "airport development",
+    "police cooperation", "security pact",
 ]
 
-# == FRAMING WORDS (NEW!) ==
-# These detect HOW the article is written not just what it covers
+# == FRAMING WORDS ==
 
 NEGATIVE_FRAMING = [
     "failed", "crisis", "disaster", "corrupt",
     "scandal", "chaos", "threat", "dangerous",
-    "extreme", "radical", "alarming"
+    "extreme", "radical", "alarming", "shocking",
+    "outrage", "slammed", "blasted", "attacked",
+    "collapsed", "destroyed", "ruined", "broken",
+    "incompetent", "lies", "lied", "deceived",
 ]
 
 POSITIVE_FRAMING = [
     "success", "growth", "strong", "secure",
     "protected", "thriving", "winning", "great",
-    "patriot", "brave", "freedom"
+    "patriot", "brave", "freedom", "triumph",
+    "victory", "booming", "record", "historic",
+    "landmark", "breakthrough", "achievement",
 ]
 
 # == MODELS ==
