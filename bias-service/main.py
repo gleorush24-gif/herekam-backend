@@ -186,11 +186,12 @@ def get_framing_score(text: str) -> float:
     positive = scan_words(text, POSITIVE_FRAMING, -1)
     return negative + positive
 
-def get_regional_scores(source_id: str, title: str, description: str) -> BiasScores:
+def get_regional_scores(source_id: str, title: str, description: str, domain: str = "") -> BiasScores:
     text = f"{title} {description}".lower()
     source = source_id.lower()
 
-    source_score = ALL_SOURCES.get(source, 0.0)
+    # Try source_id first, then domain
+    source_score = ALL_SOURCES.get(source, ALL_SOURCES.get(domain, 0.0))
     us_content = scan_words(text, US_LEFT_WORDS, -1) + scan_words(text, US_RIGHT_WORDS, 1)
     framing = get_framing_score(text)
     us_final = (source_score * 0.6) + (us_content * 0.3) + (framing * 0.1)
@@ -227,13 +228,22 @@ def score_articles(request: ScoreRequest):
     for article in request.articles:
         source_id = article.source.get("id", "")
         source_name = article.source.get("name", "")
+
+        # Try multiple ways to find source
         if not source_id:
             source_id = source_name.lower().replace(" ", "-")
+
+        # Also try matching domain from URL
+        url = article.url or ""
+        domain = ""
+        if "://" in url:
+            domain = url.split("://")[1].split("/")[0].replace("www.", "")
 
         scores = get_regional_scores(
             source_id,
             article.title,
-            article.description or ""
+            article.description or "",
+            domain
         )
         article.regional_scores = scores
         article.bias_score = scores.us_bias
