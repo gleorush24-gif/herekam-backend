@@ -8,6 +8,9 @@ app = FastAPI()
 # == SOURCE BIAS SCORES ==
 
 US_SOURCE_BIAS = {
+    "abcnews.com": -0.3,
+"abc-news": -0.3,
+"nakedcapitalism.com": -0.4,
     "breitbart": 0.95,
     "breitbart.com": 0.95,
     "thedailywire.com": 0.85,
