@@ -334,14 +334,26 @@ def get_regional_scores(source_id: str, title: str, description: str, domain: st
     text = f"{title} {description}".lower()
     source = source_id.lower()
 
-    source_score = ALL_SOURCES.get(source, ALL_SOURCES.get(domain, 0.0))
+    # Check if source is known
+    source_score = ALL_SOURCES.get(source, ALL_SOURCES.get(domain, None))
     us_content = scan_words(text, US_LEFT_WORDS, -1) + scan_words(text, US_RIGHT_WORDS, 1)
     framing = get_framing_score(text)
-    us_final = (source_score * 0.6) + (us_content * 0.3) + (framing * 0.1)
 
-    aus_source = APAC_SOURCE_BIAS.get(source, APAC_SOURCE_BIAS.get(domain, 0.0))
+    # Unknown source - rely more on content
+    if source_score is None:
+        source_score = 0.0
+        us_final = (us_content * 0.7) + (framing * 0.3)
+    else:
+        us_final = (source_score * 0.6) + (us_content * 0.3) + (framing * 0.1)
+
+    # Australia
+    aus_source = APAC_SOURCE_BIAS.get(source, APAC_SOURCE_BIAS.get(domain, None))
     aus_content = scan_words(text, AUS_LEFT_WORDS, -1) + scan_words(text, AUS_RIGHT_WORDS, 1)
-    aus_final = (aus_source * 0.6) + (aus_content * 0.3) + (framing * 0.1)
+    if aus_source is None:
+        aus_source = 0.0
+        aus_final = (aus_content * 0.7) + (framing * 0.3)
+    else:
+        aus_final = (aus_source * 0.6) + (aus_content * 0.3) + (framing * 0.1)
 
     china_content = scan_words(text, CRITICAL_CCP_WORDS, -1) + scan_words(text, PRO_CCP_WORDS, 1)
     china_final = china_content
